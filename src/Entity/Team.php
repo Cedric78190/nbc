@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\TeamRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TeamRepository::class)]
@@ -18,7 +19,7 @@ class Team
     #[ORM\Column(length: 80)]
     private ?string $name = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $poster = null;
 
     #[ORM\ManyToMany(targetEntity: self::class, inversedBy: 'opponents')]
@@ -30,6 +31,9 @@ class Team
 
     #[ORM\ManyToMany(targetEntity: Game::class, mappedBy: 'teams')]
     private Collection $games;
+
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $description = null;
 
     public function __construct()
     {
@@ -125,6 +129,18 @@ class Team
         if ($this->games->removeElement($game)) {
             $game->removeTeam($this);
         }
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(string $description): self
+    {
+        $this->description = $description;
 
         return $this;
     }
